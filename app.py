@@ -14,7 +14,6 @@ from src.model_training import FEATURES
 from src.insights import (generate_dataset_insights, generate_statistical_insights,
                            generate_realtime_insights,
                            detect_city_peaks, detect_peak_hours, build_realtime_history)
-from src.data_quality import check_processed_file, summarize_for_ui
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)

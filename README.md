@@ -16,7 +16,7 @@ The Smart Urban Noise Analyzer is a full-stack data science application that pre
 | Module | Description |
 |--------|-------------|
 | **Dashboard** | Live noise estimates for all cities, heatmaps, KPI metrics |
-| **EDA** | 10+ interactive Plotly charts across 4 analysis tabs |
+| **EDA** | 10+ interactive Plotly charts across 5 analysis tabs |
 | **Prediction** | Real-time prediction with live Open-Meteo weather, 24-hr forecast, sensitivity analysis |
 | **Chatbot** | Groq AI (Llama 3.1) with 7 intent types and multi-turn memory |
 | **Model Info** | Model comparison, feature importances, residual analysis |
@@ -148,7 +148,7 @@ Open-Meteo Archive API
 | Ridge Regression | 3.44 | 2.77 | 0.66 |
 | Linear Regression | 3.44 | 2.77 | 0.66 |
 
-**Features used (12):** `hour`, `day_of_week`, `month`, `is_weekend`, `is_rush_hour`, `is_night`, `Traffic_Count`, `temperature`, `wind_speed`, `precipitation`, `humidity`, `pm25`
+**Features used (18):** `day_of_week`, `is_weekend`, `is_rush_hour`, `is_night`, `Traffic_Count`, `temperature`, `wind_speed`, `precipitation`, `humidity`, `pm25`, `hour_sin`, `hour_cos`, `month_sin`, `month_cos`, `heat_index`, `traffic_ratio`, `traffic_log`, `city_base_noise`
 
 ---
 
