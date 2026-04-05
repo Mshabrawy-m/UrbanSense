@@ -23,6 +23,10 @@ class SmartNoiseChatbot:
         self.model_name = "llama-3.1-8b-instant"
         # Conversation memory (last 6 turns kept for context)
         self.history: list[dict] = []
+        
+        # Defensive: Always initialize to ensure AttributeErrors cannot occur from cached objects
+        self.df    = None
+        self.stats = ""
 
         try:
             self.df    = pd.read_csv('data/processed_data.csv')

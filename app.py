@@ -36,6 +36,7 @@ def load_model():
 
 @st.cache_resource
 def get_chatbot():
+    # Force cache refresh (v2 - fixed attribute errors)
     from src import chatbot as m
     import importlib; importlib.reload(m)
     return m.SmartNoiseChatbot()
