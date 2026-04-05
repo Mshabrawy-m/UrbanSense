@@ -6,7 +6,18 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-_groq_key = os.environ.get("GROQ_API_KEY")
+# Load API key: Streamlit Cloud secrets first, then environment variable
+def _load_groq_key() -> str | None:
+    try:
+        import streamlit as st
+        key = st.secrets.get("GROQ_API_KEY")
+        if key:
+            return str(key)
+    except Exception:
+        pass
+    return os.environ.get("GROQ_API_KEY")
+
+_groq_key = _load_groq_key()
 
 try:
     from groq import Groq
