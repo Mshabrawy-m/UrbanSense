@@ -21,10 +21,10 @@ env/
 *.ipynb
 
 # ML model artifacts (regenerate with: python setup.py)
-models/*.pkl
+# models/*.pkl
 
 # Data files (regenerate with: python setup.py)
-data/*.csv
+# data/*.csv
 
 # IDE / OS
 .vscode/
