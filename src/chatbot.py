@@ -6,19 +6,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# Load API key: Streamlit Cloud secrets first, then environment variable
-def _load_groq_key() -> str | None:
-    try:
-        import streamlit as st
-        key = st.secrets.get("GROQ_API_KEY")
-        if key:
-            return str(key)
-    except Exception:
-        pass
-    return os.environ.get("GROQ_API_KEY")
-
-_groq_key = _load_groq_key()
-
 try:
     from groq import Groq
     _groq_available = True
@@ -30,10 +17,24 @@ from src.model_training import FEATURES
 
 class SmartNoiseChatbot:
     def __init__(self):
-        self.client     = Groq(api_key=_groq_key) if (_groq_available and _groq_key) else None
+        # Load API key at runtime (not import time) so st.secrets works on Streamlit Cloud
+        groq_key = self._resolve_api_key()
+        self.client     = Groq(api_key=groq_key) if (_groq_available and groq_key) else None
         self.model_name = "llama-3.1-8b-instant"
         # Conversation memory (last 6 turns kept for context)
         self.history: list[dict] = []
+
+    @staticmethod
+    def _resolve_api_key():
+        """Try Streamlit secrets first, then env var."""
+        try:
+            import streamlit as st
+            key = st.secrets.get("GROQ_API_KEY")
+            if key:
+                return str(key)
+        except Exception:
+            pass
+        return os.environ.get("GROQ_API_KEY")
 
         try:
             self.df    = pd.read_csv('data/processed_data.csv')
