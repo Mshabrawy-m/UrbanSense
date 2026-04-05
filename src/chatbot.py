@@ -98,12 +98,18 @@ class SmartNoiseChatbot:
                              "impact", "hearing", "damage"]),
             ("COMPARE",    ["compare", "vs", "versus", "difference between",
                              "better", "worse"]),
-            ("TREND",      ["trend", "pattern", "over time", "monthly",
-                             "seasonal", "increase", "decrease"]),
-            ("ADVICE",     ["tip", "advice", "reduce", "mitigate", "solution",
-                             "recommend", "improve", "lower noise"]),
-            ("MODEL_INFO", ["model", "accuracy", "rmse", "r2", "performance",
-                             "algorithm", "machine learning", "ml"]),
+            ("PREDICTION", ["predict", "forecast", "estimate", "what is", "noise now",
+                             "تنبؤ", "توقع", "كم الضوضاء", "مستوى الصوت"]),
+            ("COMPARE",    ["compare", "vs", "versus", "difference",
+                             "قارن", "بالمقارنة", "أيهما أعلى", "فرق"]),
+            ("HEALTH",     ["health", "risk", "danger", "harm", "sleep", "sick", "hearing",
+                             "صحة", "خطر", "أضرار", "مرض", "نوم", "سمع"]),
+            ("TREND",      ["trend", "pattern", "over time", "monthly", "seasonal", "increase", "decrease",
+                             "نمط", "اتجاه", "شهري", "ساعة ذروة", "زيادة", "نقص"]),
+            ("ADVICE",     ["tip", "advice", "reduce", "mitigate", "solution", "recommend", "improve", "lower noise",
+                             "نصيحة", "تقليل", "حل", "تخفيف", "توصية"]),
+            ("MODEL_INFO", ["model", "accuracy", "rmse", "r2", "performance", "algorithm", "machine learning", "ml",
+                             "دقة", "موديل", "خوارزمية", "ذكاء اصطناعي", "أداء"]),
         ]
         for intent, keywords in rules:
             if any(w in t for w in keywords):
@@ -113,10 +119,18 @@ class SmartNoiseChatbot:
     # ------------------------------------------------------------------ #
     def _extract_city(self, text: str) -> str:
         from src.api_integration import CITY_COORDS
-        for c in CITY_COORDS:
-            if c.lower() in text.lower():
-                return c
-        return "New York"
+        mapping = {
+            "Cairo":    ["cairo", "القاهرة"],
+            "London":   ["london", "لندن"],
+            "New York": ["new york", "نيويورك"],
+            "Tokyo":    ["tokyo", "طوكيو"],
+            "Paris":    ["paris", "باريس"]
+        }
+        t = text.lower()
+        for city, aliases in mapping.items():
+            if any(a in t for a in aliases):
+                return city
+        return "Cairo"  # Default to Cairo for local context if no city found
 
     def _build_messages(self, system_prompt: str, user_prompt: str) -> list:
         """Build message list with conversation history for multi-turn context."""
@@ -131,7 +145,9 @@ class SmartNoiseChatbot:
             return ("Groq API key not configured. "
                     "Set the GROQ_API_KEY environment variable to enable AI responses.")
         try:
-            messages = self._build_messages(system_prompt, user_prompt)
+            # Add dynamic instruction to respond in user's language
+            lang_instruction = "\n\nIMPORTANT: Respond in the same language as the user's input (English or Arabic)."
+            messages = self._build_messages(system_prompt + lang_instruction, user_prompt)
             completion = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
