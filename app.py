@@ -123,7 +123,7 @@ with st.sidebar:
     st.divider()
     page = st.radio(
         "Navigate",
-        ["Dashboard", "EDA", "Data & quality", "Prediction", "Chatbot", "Model Info"],
+        ["Dashboard", "EDA", "Prediction", "Chatbot", "Model Info"],
     )
     st.divider()
     with st.expander("WHO Noise Guidelines"):
@@ -381,77 +381,6 @@ elif page == "EDA":
 
     st.divider()
     get_eda().display_eda_in_streamlit()
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  DATA & QUALITY
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "Data & quality":
-    st.title("Data sources & quality checks")
-    st.markdown(
-        "**Open-Meteo** provides real hourly weather (archive for training, forecast for live) "
-        "and real **PM2.5** from the Air Quality API when the service returns a value. "
-        "There is no free global API for hourly **vehicle counts** or **sound-level meters** at these coordinates, "
-        "so traffic remains a **deterministic model** and the training **noise label** is a **physics-inspired estimate** "
-        "from traffic + weather (the ML model learns that mapping)."
-    )
-
-    st.subheader("Field inventory")
-    st.dataframe(
-        pd.DataFrame(
-            {
-                "Field": [
-                    "temperature, wind, precipitation, humidity",
-                    "PM2.5 (pm25)",
-                    "Traffic_Count",
-                    "Noise_Level_dB (target)",
-                ],
-                "Source": [
-                    "Real — Open-Meteo Weather API",
-                    "Real — Open-Meteo Air Quality API (fallback: empirical estimate)",
-                    "Modeled — time-of-day + city profile (reproducible)",
-                    "Modeled — ISO-style level from traffic + weather + city baseline",
-                ],
-            }
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    st.subheader("Checks on `data/processed_data.csv`")
-    if not os.path.isfile("data/processed_data.csv"):
-        st.error("Processed dataset not found. Run `python setup.py` from the project root.")
-    else:
-        try:
-            _cols = pd.read_csv("data/processed_data.csv", nrows=0).columns.tolist()
-            if "pm25_source" not in _cols:
-                st.info(
-                    "This file was built before **real PM2.5** was merged. "
-                    "Run **`python setup.py`** to rebuild `data.csv` / `processed_data.csv` with Open-Meteo Air Quality."
-                )
-        except Exception:
-            pass
-        rep = check_processed_file("data/processed_data.csv")
-        st.markdown(summarize_for_ui(rep))
-        if rep.get("errors"):
-            for e in rep["errors"]:
-                st.error(e)
-        for w in rep.get("warnings") or []:
-            st.warning(w)
-        pm_share = (rep.get("stats") or {}).get("pm25_open_meteo_share")
-        if pm_share is not None and pm_share < 0.5:
-            st.info(
-                "Less than half of rows show `pm25_source=open_meteo_aq` in the file. "
-                "Rebuild with `python setup.py` after updating the pipeline so PM2.5 is merged from the Air Quality API."
-            )
-        with st.expander("Full report (JSON)"):
-            st.json(rep)
-
-    st.divider()
-    st.caption(
-        "References: [Open-Meteo Weather](https://open-meteo.com/), "
-        "[Open-Meteo Air Quality](https://open-meteo.com/en/docs/air-quality-api)."
-    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
