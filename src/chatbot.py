@@ -24,18 +24,6 @@ class SmartNoiseChatbot:
         # Conversation memory (last 6 turns kept for context)
         self.history: list[dict] = []
 
-    @staticmethod
-    def _resolve_api_key():
-        """Try Streamlit secrets first, then env var."""
-        try:
-            import streamlit as st
-            key = st.secrets.get("GROQ_API_KEY")
-            if key:
-                return str(key)
-        except Exception:
-            pass
-        return os.environ.get("GROQ_API_KEY")
-
         try:
             self.df    = pd.read_csv('data/processed_data.csv')
             self.stats = self._precompute_stats()
@@ -49,6 +37,18 @@ class SmartNoiseChatbot:
         except Exception:
             self.ml_model = None
             self.meta     = {}
+
+    @staticmethod
+    def _resolve_api_key():
+        """Try Streamlit secrets first, then env var."""
+        try:
+            import streamlit as st
+            key = st.secrets.get("GROQ_API_KEY")
+            if key:
+                return str(key)
+        except Exception:
+            pass
+        return os.environ.get("GROQ_API_KEY")
 
     # ------------------------------------------------------------------ #
     def _precompute_stats(self) -> str:
