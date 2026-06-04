@@ -146,7 +146,7 @@ class SmartNoiseChatbot:
                     "Set the GROQ_API_KEY environment variable to enable AI responses.")
         try:
             # Add dynamic instruction to respond in user's language
-            lang_instruction = "\n\nIMPORTANT: Respond in the same language as the user's input (English or Arabic)."
+            lang_instruction = "\n\nCRITICAL RULE: You MUST reply in the EXACT SAME LANGUAGE as the user's prompt. If the user asks in Arabic, you MUST reply entirely in Arabic. If the user asks in English, you MUST reply entirely in English."
             messages = self._build_messages(system_prompt + lang_instruction, user_prompt)
             completion = self.client.chat.completions.create(
                 model=self.model_name,
