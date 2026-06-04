@@ -35,9 +35,14 @@ st.markdown("""
 # ── Cached loaders ─────────────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    _mt = os.path.getmtime('models/noise_model.pkl')
-    return joblib.load('models/noise_model.pkl'), joblib.load('models/model_meta.pkl')
-
+    try:
+        _mt = os.path.getmtime('models/noise_model.pkl')
+        return joblib.load('models/noise_model.pkl'), joblib.load('models/model_meta.pkl')
+    except Exception as e:
+        logger.warning(f"Failed to load model ({e}). Retraining on the fly...")
+        from src.model_training import main as retrain_model
+        retrain_model()
+        return joblib.load('models/noise_model.pkl'), joblib.load('models/model_meta.pkl')
 @st.cache_resource
 def get_chatbot():
     from src import chatbot as m
