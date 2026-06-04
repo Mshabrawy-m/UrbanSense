@@ -496,7 +496,7 @@ elif page == "🔮 Prediction":
     for c in CITY_COORDS:
         f = batch_feats.get(c)
         if f is None:
-            batch_rows.append({"City": c, "Predicted dB": "N/A",
+            batch_rows.append({"City": c, "Predicted dB": None,
                                 "Category": "Unavailable",
                                 "Traffic": "-", "Temp (C)": "-",
                                 "Wind (km/h)": "-", "Humidity (%)": "-", "PM2.5": "-"})
@@ -507,8 +507,10 @@ elif page == "🔮 Prediction":
                             "Category": f"{icon_c} {cat_c}",
                             "Traffic": f[4], "Temp (C)": f[5],
                             "Wind (km/h)": f[6], "Humidity (%)": f[8], "PM2.5": f[9]})
-    st.dataframe(pd.DataFrame(batch_rows).sort_values("Predicted dB", ascending=False),
-                 use_container_width=True, hide_index=True)
+    
+    df_batch = pd.DataFrame(batch_rows)
+    df_batch = df_batch.sort_values("Predicted dB", ascending=False, na_position="last").fillna("N/A")
+    st.dataframe(df_batch, use_container_width=True, hide_index=True)
 
 
 
